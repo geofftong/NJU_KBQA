@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>搜索商品记录存储在本地</title>
+    <style type="text/css">
+        .search {
+            margin: 30px 80px;
+            position: relative;
+
+        }
+
+        .search input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 35px;
+            outline: none;
+            border: 1px solid #979797;
+            text-indent: 10px;
+        }
+
+        .search .btn {
+            position: absolute;
+            top: 0;
+            left: 301px;
+            width: 80px;
+            height: 37px;
+            border: 1px solid #979797;
+            background: linear-gradient(to bottom, #f9f9f9, #ededed);
+            font-size: 16px;
+            outline: none;
+
+        }
+
+        ul {
+            width: 381px;
+            border: 1px solid #979797;
+            position: absolute;
+            top: 66px;
+            left: 80px;
+            box-sizing: border-box;
+        }
+
+        ul li {
+            line-height: 30px;
+            color: #7a77c8;
+            cursor: pointer;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        ul li:hover {
+            background: #7a77c8;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="search">
+    <input type="text"/>
+    <button class="btn">搜索</button>
+</div>
+<ul class="hidden">
+    <li></li>
+</ul>
+
+
+</body>
+</html>

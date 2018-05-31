@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="../static/js/jquery-3.1.1.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        var Ajax = function () {
+            var arr = ["who wrote mildred pierced ?"];
+            $.getJSON("/mydict", function (data) {
+                $.each(data, function (i, field) {
+                    //alert(field);
+                    arr.push(field);
+                });
+                document.getElementById("qaInput").value = arr[2];
+                document.getElementById("qaForm").submit();
+            });
+        };
+
+        function recall_submit() {
+            document.getElementById("qaInput").value = "recall";
+            document.getElementById("qaForm").submit();
+        }
+
+    </script>
+    <title>KBQA</title>
+    <style type="text/css">
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+
+        body {
+            margin-bottom: 200px;
+        }
+
+        .footer {
+            border-top: 1px solid #e5e5e5;
+            color: #777;
+            padding: 19px 0;
+            background-color: #f5f5f5;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="http://114.212.190.231:4001/">Homepage<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Services
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('mention')}}">Mention Detection</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('entity')}}">Entity Linking</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('relation')}}">Relation Detection</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        Docs
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('coming_soon')}}">Documents</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('coming_soon')}}">APIs</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">Try me</a>
+                </li>
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user %}
+                <li><a href="#">{{ user.username }}</a></li>
+                <li><a href="">Sign out</a></li>
+                {% else %}
+                <li><a href="">Sign in</a></li>
+                <li><a href="">Sign up</a></li>
+                {% endif %}
+
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="ui vertical subheader aligned">
+    <div class="ui text container" style="text-align: center">
+        <h1 class="ui header">
+            Mention Detection
+        </h1>
+    </div>
+</div>
+<div style="padding-top: 70px; padding-bottom: 70px">
+    <form class="bs-example bs-example-form" id="qaForm" role="form" method="POST">
+        <br>
+        <div align="center">
+        <textarea name="InputTextBox" rows="2" cols="20" id="InputTextBox"
+                  style="font-size:12pt;height:200px;width:600px;">
+who 's currently a member of the united states house committee on agriculture
+which language is written in the arizona sword
+what time zone is livorno ferraris in
+what songs are in the world of the goons ?
+who plays meg in family guy?
+who was the soviet leader during world war ii
+which character did natalie portman play in black swan</textarea>
+            <p>
+                <input type="submit" name="1-best" value="Submit (1-best)" id="Button"/>
+                <input type="button" name="high-recall" value="Submit (High Recall)" id="Button2"
+                       onclick="recall_submit();"/>
+                <input type="hidden" class="form-control" id='qaInput' name="input"
+                       placeholder="input a question"/>
+            </p>
+            <div id="ResultPanel" style="background-color:White;width:880px;">
+
+            </div>
+
+        </div>
+
+
+        <div id="loading" class="ui active centered inline text loader" style="display: none;margin-top: 50px;">
+            searching...
+        </div>
+
+        {% if result %}
+
+        <div class="page-header" style="margin-left: 5%">
+            <h5 class="ui horizontal divider header">
+                Searching Results
+            </h5>
+        </div>
+        {% if result['flag'] %}
+        <div class="table-responsive">
+            <table class="table table-bordered row text-center mx-0" style="width: 85%;margin-left: 5%">
+                <thead class="col-md-12">
+                <tr class="row mx-0">
+                    <th class="col-1 text-center"> id</th>
+                    <th class="col-1 text-center"> mentions</th>
+                </tr>
+                </thead>
+                <tbody class="col-md-12">
+                {% for item in result['answer']%}
+                <tr class="row mx-0">
+                    <td class="col-1">{{loop.index}}</td>
+                    <td class="col-1">
+                        <script type="text/javascript">
+                            var s = "{{item[0]}}".split("|||");
+                            var reg = new RegExp("(" + s[0] + ")", "g");
+                            var str = "{{item[1]}}";
+                            var newstr = str.replace(reg, "<font color=red>$1</font>");
+                            if(s.length > 1){
+                                reg = new RegExp("(" + s[1] + ")", "g");
+                                newstr = newstr.replace(reg, "<font color=#8a2be2>$1</font>");
+                            }
+                            if(s.length > 2){
+                                reg = new RegExp("(" + s[2] + ")", "g");
+                                newstr = newstr.replace(reg, "<font color=yellow>$1</font>");
+                            }
+                            document.write(newstr);
+                        </script>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="input-group" style="margin-left: 5%">
+                <h5 class="ui horizontal divider header">
+                    No answer found!
+                </h5>
+            </div>
+            {% endif %}
+
+            {% endif %}
+            {% if warning %}
+            <alert class="alert-warning" style="margin-left: 5%">
+                {{warning}}
+            </alert>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<div class="footer ">
+    <div class="container">
+        <div class="row footer-top">
+            <div class="col-sm-6 col-lg-6">
+                <h4></h4>
+                <p>Welcome to join us !</p>
+            </div>
+            <div class="col-sm-6  col-lg-5 col-lg-offset-1">
+                <div class="row about">
+                    <div class="col-xs-3">
+                        <h4>About</h4>
+                        <ul class="list-unstyled">
+                            <li>
+                                <a href="http://nlp.nju.edu.cn/homepage/">about us</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-3">
+                        <h4>Contact</h4>
+                        <ul class="list-unstyled">
+                            <li>
+                                <a href="mailto:kbqa@nlp.nju.edu.cn">email</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <hr>
+        <div class="row footer-bottom">
+            <ul class="list-inline text-center">
+                <li>Copyright &copy;2018. NJU NLP. All Rights Reserved.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
